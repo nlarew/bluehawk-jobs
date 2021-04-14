@@ -12,7 +12,7 @@ const job = bluehawkJob({
         // "./source/**"
       ],
       // paths: ["./**"],
-      ignorePaths: ["./**/node_modules/**", "./**/build/**", "./foobar/nested/notme.js"]
+      ignorePaths: ["./**/node_modules/**", "./**/build/**", "./**/foobar/nested/notme.js"]
     },
     // {
     //   name: "filesystem",

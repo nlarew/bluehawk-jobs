@@ -34,12 +34,13 @@ export async function run(job: Job, root: string) {
             Path.relative(projectDirectory, Path.dirname(document.path))
           );
           const targetPath = Path.join(directory, document.basename);
+          console.log(`\nwriting file ${document.path} to ${targetPath}`)
           console.log({
             projectDirectory,
             directory,
             targetPath,
+            absoluteTargetPath: Path.join(projectDirectory, targetPath)
           })
-          console.log(`writing file ${document.path} to ${targetPath}`)
           await fs.mkdir(directory, { recursive: true });
           await fs.writeFile(targetPath, document.text.toString(), "utf8");
         }
@@ -58,7 +59,6 @@ export async function run(job: Job, root: string) {
   
   const bh = await getBluehawk();
   bh.subscribe(async ({ parseResult, document }) => {
-    console.log("bh.subscribe", document.path, __dirname);
     handlers.forEach((handler) => {
       handler({ parseResult, document });
     });
