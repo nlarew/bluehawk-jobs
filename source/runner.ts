@@ -86,21 +86,24 @@ export async function run(job: Job, root: string) {
       return !included
     })
     
-    return { dirs: relative(rootDir, dirs), ignore: relative(rootDir, ignore) }
+    return {
+      dirs: relative(rootDir, dirs),
+      ignore: ignore.map(p => Path.basename(p)) //relative(rootDir, ignore)
+    }
   }
   const { dirs, ignore } = bushyHack(filenames)
   console.log({ dirs, ignore })
 
   await bh.parseAndProcess(dirs, {
     waitForListeners: true,
-    onBinaryFile: (file: string) => {
-      console.log("onBinaryFile", file)
-    },
-    onErrors: (file: string, errors: BluehawkError[]) => {
-      console.error("onErrors", file, errors)
-    },
     ignore: ignore,
   });
+  // onBinaryFile: (file: string) => {
+  //   console.log("onBinaryFile", file)
+  // },
+  // onErrors: (file: string, errors: BluehawkError[]) => {
+  //   console.error("onErrors", file, errors)
+  // },
   console.log("bh: done");
 }
 
