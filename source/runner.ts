@@ -4,17 +4,76 @@ import minimatch from "minimatch"
 import {
   Job,
   Source,
-  isFileSystemSource,
-  isFileSystemOutput,
+  isFilesystemSource,
+  isFilesystemOutput,
   Output,
+  Plugin,
+  IPluginImpl,
 } from "./job";
-import { getBluehawk, Listener, ParseResult } from "bluehawk";
+import { getBluehawk, Listener, Document } from "bluehawk";
 import { glob, splitPromiseSettledResults } from "./util";
 import { BluehawkError } from "bluehawk/build/src/bluehawk/BluehawkError";
 import { ProcessResult } from "bluehawk/build/src/bluehawk/processor/Processor";
 
+async function getSourceDocuments(sources: Source[]): Promise<Document[]> {
+  return []
+}
+
+async function getOutputListeners(outputs: Output[]): Promise<Listener[]> {
+  return []
+}
+
+function getPluginImpl(plugin: Plugin): IPluginImpl {
+  return {
+    ...plugin,
+    register: () => {},
+    validate: () => true,
+    source: () => ([]),
+    output: () => (() => {})
+  }
+}
+
+async function setupPlugins(plugins: Plugin[]): Promise<void> {
+  for await (const plugin of plugins) {
+    const impl = getPluginImpl(plugin);
+    const isValid = await impl.validate?.(plugin) ?? true
+    if(!isValid) {
+      throw new Error(`Invalid plugin: ${plugin}`)
+    }
+  }
+}
+
+export async function run2(job: Job, root: string) {
+  const rootDir = Path.resolve(root)
+  const bh = await getBluehawk();
+  const { plugins=[], sources, outputs } = job;
+  // Setup & Validate Plugins
+  await setupPlugins(plugins)
+  // Outputs
+  const outputListeners = await getOutputListeners(outputs);
+  bh.subscribe(async ({ parseResult, document }) => {
+    outputListeners.forEach((listener) => {
+      listener({ parseResult, document });
+    });
+  });
+  // Sources
+  const sourceDocuments = await getSourceDocuments(sources);
+  for await (const sourceDocument of sourceDocuments) {
+    const result = bh.parse(sourceDocument)
+    if (result.errors.length !== 0) {
+      console.error(sourceDocument.path, result.errors);
+      return;
+    }
+    await bh.process(result, {
+      waitForListeners: true,
+    });
+  }
+}
+
 export async function run(job: Job, root: string) {
   const rootDir = Path.resolve(root)
+  const githubPluginPath = Path.resolve("bluehawk-plugin-github")
+  console.log({ rootDir, githubPluginPath })
   const { sources, outputs } = job;
   // Sources
   const filenames = await getFilenamesFromSources(sources);
@@ -27,7 +86,7 @@ export async function run(job: Job, root: string) {
     const handler: Listener | undefined = ({
       filesystem: async ({ parseResult, document }: ProcessResult) => {
         // console.log("filesystem handler", parseResult, document)
-        if(isFileSystemOutput(output)) {
+        if(isFilesystemOutput(output)) {
           const projectDirectory = rootDir
           const directory = Path.join(
             output.path,
@@ -132,7 +191,7 @@ async function getFilenamesFromSources(sources: Source[]): Promise<string[]> {
 }
 
 async function getFilenamesFromSource(source: Source): Promise<string[]> {
-  if (isFileSystemSource(source)) {
+  if (isFilesystemSource(source)) {
     return getUniqueFilenames(
       source.paths.map((path) => getFilenamesFromPath(path, source.ignorePaths))
     );
