@@ -7,18 +7,18 @@ const job = bluehawkJob({
   sources: [
     {
       name: "filesystem",
-      // paths: [
-      //   "./foobar/**",
-      //   // "./source/**"
-      // ],
-      paths: ["./**"],
-      ignorePaths: ["./**/node_modules/**", "./**/build/**"]
+      paths: [
+        "./foobar/**",
+        // "./source/**"
+      ],
+      // paths: ["./**"],
+      ignorePaths: ["./**/node_modules/**", "./**/build/**", "./foobar/nested/notme.js"]
     },
-    {
-      name: "filesystem",
-      paths: ["./**"],
-      ignorePaths: ["./node_modules/**", "./build/**"]
-    },
+    // {
+    //   name: "filesystem",
+    //   paths: ["./**"],
+    //   ignorePaths: ["./node_modules/**", "./build/**"]
+    // },
   ],
   outputs: [
     {
@@ -28,4 +28,4 @@ const job = bluehawkJob({
   ],
 });
 
-run(job);
+run(job, `${__dirname}/..`);

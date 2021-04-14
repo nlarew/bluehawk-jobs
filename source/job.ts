@@ -14,6 +14,9 @@ export const bluehawkJob = <J extends Job>(j: J): Job => j
 // Plugins
 export interface IPlugin {
   name: string
+  // validate?: () => {} // e.g. make sure you have a valid github token for the repo before we run the job
+  // source?: () => {}
+  // output?: () => {}
 }
 
 // Sources
