@@ -40,6 +40,7 @@ export async function run(job: Job, root: string) {
             targetPath,
           })
           console.log(`writing file ${document.path} to ${targetPath}`)
+          await fs.mkdir(directory, { recursive: true });
           await fs.writeFile(targetPath, document.text.toString(), "utf8");
         }
       }

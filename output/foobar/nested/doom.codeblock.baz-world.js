@@ -1,0 +1,3 @@
+function doooooooooom() {
+  return "DOOOOOOOOOOM!"
+}
