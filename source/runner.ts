@@ -75,13 +75,6 @@ export async function run(job: Job, root: string) {
     // we also need a list of ignored files. filenames doesn't include any ignored files, but we may
     // ignore specific files in directories that we otherwise include so we specify those here. We
     // don't need to ignore anything once bluehawk allows specific absolute path files again.\
-    const ignorePaths = new Set<string>()
-    for (const source of sources) {
-      if(isFileSystemSource(source)) {
-        source.ignorePaths?.forEach(i => ignorePaths.add(i))
-      }
-    }
-
     const allDirFiles = dirs.flatMap(d => {
       const ls = readdirSync(d)
       const dirFiles = ls.map(p => Path.join(d, p))
