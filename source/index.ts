@@ -3,7 +3,10 @@ import { run } from "./runner";
 
 const job = bluehawkJob({
   name: "Realm Examples (JS/TS)",
-  plugins: [{ name: "filesystem" }, { name: "github" }],
+  plugins: [
+    { name: "filesystem" },
+    // { name: "github" }
+  ],
   sources: [
     {
       name: "filesystem",

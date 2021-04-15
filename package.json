@@ -16,8 +16,6 @@
     "@types/node": "^14.14.37",
     "bluehawk": "^0.4.2",
     "glob": "^7.1.6",
-    "minimatch": "^3.0.4",
-    "tiny-glob": "^0.2.8",
     "typescript": "^4.2.2"
   }
 }

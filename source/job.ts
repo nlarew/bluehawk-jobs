@@ -17,14 +17,12 @@ export interface IPlugin {
   name: string
 }
 
-export type RegisterPlugin<PluginConfig extends IPlugin = IPlugin> = (config: PluginConfig) => void | Promise<void> // e.g. make sure you have a valid github token for the repo before we run the job
 export type ValidateFunction<PluginConfig extends IPlugin = IPlugin> = (config: PluginConfig) => boolean | Promise<boolean> // e.g. make sure you have a valid github token for the repo before we run the job
 export type SourceFunction<SourceConfig extends ISource = ISource> = (config: SourceConfig) => Document[] | Promise<Document[]>
 export type OutputFunction<OutputConfig extends IOutput = IOutput> = (config: OutputConfig) => Listener | Promise<Listener>
 
 export interface IPluginImpl {
   name: string
-  register: RegisterPlugin
   validate?: ValidateFunction
   source?: SourceFunction
   output?: OutputFunction
