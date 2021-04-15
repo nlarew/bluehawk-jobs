@@ -35,3 +35,7 @@ export function hasProperties<T extends object>(input: object, properties: (keyo
   })
   return hasAllProperties
 }
+
+export function unique<T>(arr: T[]): T[] {
+  return [...new Set(arr)];
+}

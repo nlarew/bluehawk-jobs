@@ -1,23 +1,26 @@
 import Path from "path";
 import { readFileSync, promises as fs } from "fs";
 import {
-  IPlugin,
-  Plugin,
-  FilesystemPlugin,
-  FilesystemSource,
-  FilesystemOutput,
+  ISource,
+  IOutput,
+  IPluginImpl,
 } from "../../job";
-import { glob, splitPromiseSettledResults } from "../../util";
-import { Listener, Document } from "bluehawk";
-import { ProcessResult } from "bluehawk/build/src/bluehawk/processor/Processor";
+import { glob, splitPromiseSettledResults, unique } from "../../util";
+import { Document } from "bluehawk";
 
-const listener = <T extends Listener>(t: T): Listener => t; 
+export interface FilesystemSource extends ISource {
+  name: "filesystem";
+  paths: string[];
+  ignorePaths?: string[];
+}
 
-export const plugin = (context: { root: string }) => ({
+export interface FilesystemOutput extends IOutput {
+  name: "filesystem";
+  path: string;
+}
+
+export const setup = (context: { root: string }): IPluginImpl<FilesystemSource, FilesystemOutput> => ({
   name: "filesystem",
-  validate: (config: IPlugin) => {
-    return true;
-  },
   source: async (source: FilesystemSource) => {
     const filenames = await getUniqueFilenames(
       source.paths.map((path) => getFilenames(path, source.ignorePaths))
@@ -34,7 +37,7 @@ export const plugin = (context: { root: string }) => ({
     return documents
   },
   output: (output: FilesystemOutput) => {
-    return listener(async ({ parseResult, document }: ProcessResult) => {
+    return async ({ parseResult, document }) => {
       const directory = Path.join(
         output.path,
         Path.relative(context.root, Path.dirname(document.path))
@@ -42,13 +45,9 @@ export const plugin = (context: { root: string }) => ({
       const targetPath = Path.join(directory, document.basename);
       await fs.mkdir(directory, { recursive: true });
       await fs.writeFile(targetPath, document.text.toString(), "utf8");
-    });
+    };
   },
 });
-
-function unique<T>(arr: T[]): T[] {
-  return [...new Set(arr)];
-}
 
 async function getUniqueFilenames(
   promises: Promise<string[]>[]
