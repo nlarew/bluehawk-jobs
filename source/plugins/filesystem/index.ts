@@ -4,9 +4,14 @@ import {
   ISource,
   IOutput,
   IPluginImpl,
+  IPlugin,
 } from "../../job";
 import { glob, splitPromiseSettledResults, unique } from "../../util";
 import { Document } from "bluehawk";
+
+export interface FilesystemPlugin extends IPlugin {
+  name: "filesystem";
+}
 
 export interface FilesystemSource extends ISource {
   name: "filesystem";

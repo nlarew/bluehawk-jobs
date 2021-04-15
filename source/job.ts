@@ -20,7 +20,13 @@ export interface IPlugin {
   name: string
 }
 
-// export type ValidateFunction<PluginConfig extends IPlugin = IPlugin> = (config: PluginConfig) => boolean | Promise<boolean> // e.g. make sure you have a valid github token for the repo before we run the job
+export interface ISource {
+  name: string
+}
+
+export interface IOutput {
+  name: string
+}
 
 export interface IPluginImpl<
   SourceConfig extends ISource = ISource,
@@ -29,16 +35,4 @@ export interface IPluginImpl<
   name: string
   source?: (config: SourceConfig) => Document[] | Promise<Document[]>
   output?: (config: OutputConfig) => Listener | Promise<Listener>
-}
-
-export interface FilesystemPlugin extends IPlugin {
-  name: "filesystem";
-}
-
-export interface ISource {
-  name: string
-}
-
-export interface IOutput {
-  name: string
 }
