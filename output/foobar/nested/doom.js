@@ -1,3 +1,0 @@
-function doooooooooom() {
-  return "DOOOOOOOOOOM!"
-}

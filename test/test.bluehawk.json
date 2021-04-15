@@ -1,0 +1,18 @@
+{
+  "name": "Bluehawk Job Test (JS)",
+  "sources": [
+    {
+      "name": "filesystem",
+      "paths": [
+        "./input/**"
+      ],
+      "ignorePaths": ["./**/foobar/nested/notme.js"]
+    }
+  ],
+  "outputs": [
+    {
+      "name": "filesystem",
+      "path": "./output"
+    }
+  ]
+}
