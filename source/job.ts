@@ -33,12 +33,3 @@ export interface ISource {
 export interface IOutput {
   name: string;
 }
-
-export interface IPluginImpl<
-  SourceConfig extends ISource = ISource,
-  OutputConfig extends IOutput = IOutput
-> {
-  name: string;
-  source?: (config: SourceConfig) => Document[] | Promise<Document[]>;
-  output?: (config: OutputConfig) => Listener | Promise<Listener>;
-}
