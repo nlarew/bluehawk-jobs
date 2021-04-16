@@ -1,11 +1,6 @@
 import Path from "path";
 import { readFileSync, promises as fs } from "fs";
-import {
-  ISource,
-  IOutput,
-  IPluginImpl,
-  IPlugin,
-} from "../../job";
+import { ISource, IOutput, IPluginImpl, IPlugin } from "../../job";
 import { glob, splitPromiseSettledResults, unique } from "../../util";
 import { Document } from "bluehawk";
 
@@ -24,30 +19,36 @@ export interface FilesystemOutput extends IOutput {
   path: string;
 }
 
-export const setup = (context: { root: string }): IPluginImpl<FilesystemSource, FilesystemOutput> => ({
+export const setup = (context: {
+  root: string;
+}): IPluginImpl<FilesystemSource, FilesystemOutput> => ({
   name: "filesystem",
   source: async (source: FilesystemSource) => {
     const filenames = await getUniqueFilenames(
-      source.paths.map((path) => getFilenames(path, source.ignorePaths))
+      source.paths.map((path) =>
+        getFilenames(Path.resolve(context.root, path), source.ignorePaths)
+      )
     );
-    const documents: Document[] = filenames.map(filename => {
+    const documents: Document[] = filenames.map((filename) => {
       const blob = readFileSync(Path.resolve(filename));
       // if (isBinary(filename, blob)) {
       //   onBinaryFile && (await onBinaryFile(filename));
       //   return;
       // }
       const text = blob.toString("utf8");
-      return new Document({ text, path: filename })
-    })
-    return documents
+      return new Document({ text, path: filename });
+    });
+    return documents;
   },
   output: (output: FilesystemOutput) => {
     return async ({ parseResult, document }) => {
-      const directory = Path.join(
+      const relativeDirectory = Path.join(
         output.path,
         Path.relative(context.root, Path.dirname(document.path))
       );
-      const targetPath = Path.join(directory, document.basename);
+      const directory = Path.join(context.root, relativeDirectory)
+      const relativeTargetPath = Path.join(relativeDirectory, document.basename);
+      const targetPath = Path.join(context.root, relativeTargetPath);
       await fs.mkdir(directory, { recursive: true });
       await fs.writeFile(targetPath, document.text.toString(), "utf8");
     };

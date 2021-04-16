@@ -1,34 +1,13 @@
-import { bluehawkJob } from "./job";
-import { run } from "./runner";
+import { load } from "./load";
+import { run } from "./run";
 
-const job = bluehawkJob({
-  name: "Realm Examples (JS/TS)",
-  plugins: [
-    { name: "filesystem" },
-    // { name: "github" }
-  ],
-  sources: [
-    {
-      name: "filesystem",
-      paths: [
-        "./foobar/**",
-        // "./source/**"
-      ],
-      // paths: ["./**"],
-      ignorePaths: ["./**/node_modules/**", "./**/build/**", "./**/foobar/nested/notme.js"]
-    },
-    // {
-    //   name: "filesystem",
-    //   paths: ["./**"],
-    //   ignorePaths: ["./node_modules/**", "./build/**"]
-    // },
-  ],
-  outputs: [
-    {
-      name: "filesystem",
-      path: "./output",
-    },
-  ],
-});
+main().catch(err => {
+  console.error(err.message)
+})
 
-run(job, `${__dirname}/..`);
+async function main() {
+  const root = "./test";
+  for (const job of await load(root)) {
+    run(job, root)
+  }
+}
