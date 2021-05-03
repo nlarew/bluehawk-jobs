@@ -1,14 +1,12 @@
 import Path from "path";
 import { readFileSync, promises as fs } from "fs";
-import { ISource, IOutput, IContext, Job, JobMetadata } from "../../job";
+import { ISource, IOutput, IPluginConfig } from "../../job";
 import { glob, splitPromiseSettledResults, unique } from "../../util";
 import { Document } from "bluehawk";
 import { createPlugin } from "../../plugin";
-import { RunConfig } from "../../run";
 
-export interface FilesystemContext extends IContext {
+export interface FilesystemConfig extends IPluginConfig {
   name: "filesystem";
-  root: string;
 }
 
 export interface FilesystemSource extends ISource {
@@ -22,20 +20,13 @@ export interface FilesystemOutput extends IOutput {
   path: string;
 }
 
-export const createContext = ({ meta }: RunConfig): FilesystemContext => {
-  return {
-    name: "filesystem",
-    root: meta.root,
-  }
-}
-
-export const setup = createPlugin<FilesystemContext, FilesystemSource, FilesystemOutput>(
+export const setup = createPlugin<FilesystemConfig, FilesystemSource, FilesystemOutput>(
   (context) => ({
     name: "filesystem",
     source: async (source) => {
       const filenames = await getUniqueFilenames(
         source.paths.map((path) => {
-          const resolvedPath = Path.resolve(context.root, path)
+          const resolvedPath = Path.resolve(context.meta.root, path)
           return getFilenames(resolvedPath, source.ignorePaths)
         })
       );
@@ -54,14 +45,14 @@ export const setup = createPlugin<FilesystemContext, FilesystemSource, Filesyste
       return async ({ parseResult, document }) => {
         const relativeDirectory = Path.join(
           output.path,
-          Path.relative(context.root, Path.dirname(document.path))
+          Path.relative(context.meta.root, Path.dirname(document.path))
         );
-        const directory = Path.join(context.root, relativeDirectory);
+        const directory = Path.join(context.meta.root, relativeDirectory);
         const relativeTargetPath = Path.join(
           relativeDirectory,
           document.basename
         );
-        const targetPath = Path.join(context.root, relativeTargetPath);
+        const targetPath = Path.join(context.meta.root, relativeTargetPath);
         await fs.mkdir(directory, { recursive: true });
         await fs.writeFile(targetPath, document.text.toString(), "utf8");
       };

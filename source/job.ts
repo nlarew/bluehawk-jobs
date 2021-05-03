@@ -5,7 +5,6 @@ export interface Job {
   plugins?: IPluginConfig[];
   sources: ISource[];
   outputs: IOutput[];
-  // languages?: (string | ILanguage)[],
   // transformers?: (string | ITransform)[],
 }
 
@@ -21,6 +20,7 @@ export interface JobMetadata {
   root: string; // The root directory, i.e. where the .bluehawk config file is located
   startedAt: Date;
 }
+
 export const isBluehawkJobMetadata = (meta: { [k: string]: any }): meta is JobMetadata => {
   // Has the right properties
   const hasMetadataProperties = hasProperties(meta, ["root", "startedAt"]);
@@ -32,7 +32,10 @@ export interface IPluginConfig {
   name: string;
 }
 
-export interface IContext {}
+export interface Context<Config extends IPluginConfig> {
+  config: Config,
+  meta: JobMetadata,
+}
 
 export interface ISource {
   name: string;

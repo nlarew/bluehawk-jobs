@@ -2,18 +2,16 @@ import {
   Job,
   ISource,
   IOutput,
-  IContext,
   JobMetadata,
-  isBluehawkJob,
-  isBluehawkJobMetadata,
   IPluginConfig,
+  Context,
 } from "./job";
-import { importPlugin, IPlugin, IPluginImpl } from "./plugin";
+import { importPlugin, IPluginImpl } from "./plugin";
 import { getBluehawk, Listener, Document } from "bluehawk";
 import { unique } from "./util";
 import { Plugins } from "./plugin";
 
-export interface RunConfig {
+interface RunConfig {
   job: Job;
   meta: JobMetadata;
 }
@@ -53,7 +51,7 @@ async function getPlugins(job: Job, meta: JobMetadata): Promise<Plugins> {
     await Promise.all(
       plugins.map(
         async (plugin) =>
-          [plugin.name, await getPluginImpl(plugin, { job, meta })] as [string, IPluginImpl]
+          [plugin.name, await getPluginImpl({ config: plugin, meta })] as [string, IPluginImpl]
       )
     )
   );
@@ -76,16 +74,12 @@ function inferPlugins(job: Job) {
 }
 
 // Returns an implementation of a plugin instantiated with the current context
-async function getPluginImpl(
-  config: IPluginConfig,
-  { job, meta }: RunConfig,
-): Promise<IPluginImpl> {
-  const { createContext, setup } = await importPlugin(config.name)
+async function getPluginImpl({ config, meta }: Context<IPluginConfig>): Promise<IPluginImpl> {
+  const { setup } = await importPlugin(config.name)
   if (!setup) {
     throw new Error(`No implementation found for plugin: ${config.name}`);
   }
-  const context = createContext({ config, meta });
-  return setup(context);
+  return setup({ config, meta });
 }
 
 

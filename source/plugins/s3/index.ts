@@ -1,8 +1,6 @@
 import {
   ISource,
   IOutput,
-  IContext,
-  JobMetadata,
   IPluginConfig,
 } from "../../job";
 import { Document } from "bluehawk";
@@ -15,9 +13,8 @@ import {
 } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
 import { createWriteStream } from "fs";
-import { RunConfig } from "../../run";
 
-export interface AwsS3Context extends IContext {
+export interface AwsS3Config extends IPluginConfig {
   name: "aws-s3";
   region: string;
   credentials: {
@@ -41,8 +38,8 @@ export interface AwsS3Output extends IOutput {
   ignoreKeys?: string[];
 }
 
-function getS3(context: AwsS3Context) {
-  const { region, credentials } = context;
+function getS3(config: AwsS3Config) {
+  const { region, credentials } = config;
   const s3 = new S3Client({
     region,
     credentials,
@@ -59,26 +56,12 @@ const streamToString = (stream: any): Promise<string> =>
     stream.on("end", () => resolve(Buffer.concat(chunks).toString("utf8")));
   });
 
-export const createContext = ({
-  job,
-  meta,
-}: RunConfig): AwsS3Context => {
-  return {
-    name: "aws-s3",
-    region: "",
-    credentials: {
-      accessKeyId: "",
-      secretAccessKey: "",
-    }
-  };
-};
-
-export const setup = createPlugin<AwsS3Context, AwsS3Source, AwsS3Output>(
+export const setup = createPlugin<AwsS3Config, AwsS3Source, AwsS3Output>(
   (context) => ({
     name: "aws-s3",
     source: async (source) => {
       // WIP
-      const s3 = getS3(context);
+      const s3 = getS3(context.config);
       const keys: string[] = [];
       const documents: Document[] = [];
 
@@ -103,7 +86,7 @@ export const setup = createPlugin<AwsS3Context, AwsS3Source, AwsS3Output>(
     output: (output) => {
       return async ({ parseResult, document }) => {
         // TODO
-        const s3 = getS3(context);
+        const s3 = getS3(context.config);
         const putObjectCommand = new PutObjectCommand({
           Bucket: output.bucket,
           Key: document.name,
