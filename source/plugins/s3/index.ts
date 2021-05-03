@@ -15,6 +15,7 @@ import {
 } from "@aws-sdk/client-s3";
 import { Readable } from "stream";
 import { createWriteStream } from "fs";
+import { RunConfig } from "../../run";
 
 export interface AwsS3Context extends IContext {
   name: "aws-s3";
@@ -61,10 +62,7 @@ const streamToString = (stream: any): Promise<string> =>
 export const createContext = ({
   config,
   meta,
-}: {
-  config: IPluginConfig;
-  meta: JobMetadata;
-}): AwsS3Context => {
+}: RunConfig): AwsS3Context => {
   return {
     name: "aws-s3",
     region: "",

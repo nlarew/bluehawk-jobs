@@ -13,7 +13,7 @@ import { getBluehawk, Listener, Document } from "bluehawk";
 import { unique } from "./util";
 import { Plugins } from "./plugin";
 
-interface RunConfig {
+export interface RunConfig {
   job: Job;
   meta: JobMetadata;
 }
@@ -84,7 +84,7 @@ async function getPluginImpl(
   if (!setup) {
     throw new Error(`No implementation found for plugin: ${config.name}`);
   }
-  const context = { ...createContext({ config, meta }), ...meta };
+  const context = createContext({ config, meta });
   return setup(context);
 }
 

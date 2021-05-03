@@ -4,6 +4,7 @@ import { ISource, IOutput, IContext, Job, JobMetadata } from "../../job";
 import { glob, splitPromiseSettledResults, unique } from "../../util";
 import { Document } from "bluehawk";
 import { createPlugin } from "../../plugin";
+import { RunConfig } from "../../run";
 
 export interface FilesystemContext extends IContext {
   name: "filesystem";
@@ -21,7 +22,7 @@ export interface FilesystemOutput extends IOutput {
   path: string;
 }
 
-export const createContext = (meta: JobMetadata): FilesystemContext => {
+export const createContext = ({ meta }: RunConfig): FilesystemContext => {
   return {
     name: "filesystem",
     root: meta.root,
