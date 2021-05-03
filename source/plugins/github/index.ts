@@ -1,5 +1,4 @@
-import { ISource, IOutput, 
-  IPluginConfig } from "../../job";
+import { ISource, IOutput, IPluginConfig } from "../../job";
 import { Document } from "bluehawk";
 import { createPlugin } from "../../plugin";
 
@@ -22,26 +21,28 @@ export interface GitHubSource extends GitHubRepo, ISource {
 
 export interface GitHubOutput extends GitHubRepo, IOutput {
   name: "github";
-  strategy: "commit" | "overwrite" | "pr" // instead of "deleteEverything: boolean" we can pick from a set of strategies
+  strategy: "commit" | "overwrite" | "pr"; // instead of "deleteEverything: boolean" we can pick from a set of strategies
   // localRepo: string;
   // Repo file tree
   path: string;
   branch?: string;
   mapStateToBranch?: {
     [state: string]: string;
-  }
+  };
 }
 
-export const setup = createPlugin<GitHubConfig, GitHubSource, GitHubOutput>(context => ({
-  name: "github",
-  source: async (source) => {
-    const documents: Document[] = []
-    // TODO
-    return documents
-  },
-  output: (output) => {
-    return async ({ parseResult, document }) => {
+export const setup = createPlugin<GitHubConfig, GitHubSource, GitHubOutput>(
+  (context) => ({
+    name: "github",
+    source: async (source) => {
+      const documents: Document[] = [];
       // TODO
-    };
-  },
-}));
+      return documents;
+    },
+    output: (output) => {
+      return async ({ parseResult, document }) => {
+        // TODO
+      };
+    },
+  })
+);

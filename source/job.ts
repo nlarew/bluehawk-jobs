@@ -32,11 +32,6 @@ export interface IPluginConfig {
   name: string;
 }
 
-export interface Context<Config extends IPluginConfig> {
-  config: Config,
-  meta: JobMetadata,
-}
-
 export interface ISource {
   name: string;
 }

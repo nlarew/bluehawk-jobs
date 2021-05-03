@@ -1,10 +1,15 @@
 import {
   ISource,
   IOutput,
-  Context,
   IPluginConfig,
+  JobMetadata,
 } from "./job";
 import { Document, Listener } from "bluehawk";
+
+export interface Context<Config extends IPluginConfig> {
+  config: Config,
+  meta: JobMetadata,
+}
 
 export interface IPlugin<
   Config extends IPluginConfig = IPluginConfig,
