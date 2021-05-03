@@ -1,0 +1,34 @@
+{
+  "name": "Bluehawk Job Dev (JS)",
+  "plugins": [{
+    "name": "filesystem"
+  }],
+  "sources": [
+    {
+      "name": "filesystem",
+      "paths": [
+        "input/**"
+      ],
+      "ignorePaths": [
+        "**/input/nested/notme.js"
+      ]
+    }
+  ],
+  "transform": [
+    {
+      "doRst": true
+    }
+  ],
+  "outputs": [
+    {
+      "name": "filesystem",
+      "path": "./output",
+      "filters": {
+        "snippets": false
+      },
+      "respectStates": true,
+      "useOriginalFileStructure": false,
+      "copyBinaryFiles": false
+    }
+  ]
+}
