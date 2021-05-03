@@ -33,19 +33,8 @@ export const setup = createPlugin<FilesystemContext, FilesystemSource, Filesyste
   (context) => ({
     name: "filesystem",
     source: async (source) => {
-      // const filenames = await getUniqueFilenames(
-      //   source.paths.map((path) =>
-      //     getFilenames(Path.resolve(context.root, path), source.ignorePaths)
-      //   )
-      // );
       const filenames = await getUniqueFilenames(
         source.paths.map((path) => {
-          console.log({
-            "context.root": context.root,
-            path,
-            // resolvedPath,
-            "source.ignorePaths": source.ignorePaths,
-          })
           const resolvedPath = Path.resolve(context.root, path)
           return getFilenames(resolvedPath, source.ignorePaths)
         })

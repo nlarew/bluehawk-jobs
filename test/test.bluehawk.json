@@ -1,5 +1,8 @@
 {
   "name": "Bluehawk Job Dev (JS)",
+  "plugins": [
+    { "name": "filesystem" }
+  ],
   "sources": [
     {
       "name": "filesystem",

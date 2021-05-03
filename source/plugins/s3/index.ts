@@ -60,7 +60,7 @@ const streamToString = (stream: any): Promise<string> =>
   });
 
 export const createContext = ({
-  config,
+  job,
   meta,
 }: RunConfig): AwsS3Context => {
   return {
