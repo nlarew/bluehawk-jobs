@@ -12,9 +12,11 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@aws-sdk/client-s3": "^3.13.1",
     "@types/glob": "^7.1.3",
     "@types/node": "^14.14.37",
     "bluehawk": "^0.4.2",
+    "get-stream": "^6.0.1",
     "glob": "^7.1.6",
     "typescript": "^4.2.2"
   }

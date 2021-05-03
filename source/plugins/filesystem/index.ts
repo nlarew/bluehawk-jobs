@@ -1,12 +1,13 @@
 import Path from "path";
 import { readFileSync, promises as fs } from "fs";
-import { ISource, IOutput, IPlugin } from "../../job";
+import { ISource, IOutput, IContext, Job, JobMetadata } from "../../job";
 import { glob, splitPromiseSettledResults, unique } from "../../util";
 import { Document } from "bluehawk";
 import { createPlugin } from "../../plugin";
 
-export interface FilesystemPlugin extends IPlugin {
+export interface FilesystemContext extends IContext {
   name: "filesystem";
+  root: string;
 }
 
 export interface FilesystemSource extends ISource {
@@ -20,14 +21,33 @@ export interface FilesystemOutput extends IOutput {
   path: string;
 }
 
-export const setup = createPlugin<FilesystemSource, FilesystemOutput>(
+export const createContext = (meta: JobMetadata): FilesystemContext => {
+  return {
+    name: "filesystem",
+    root: meta.root,
+  }
+}
+
+export const setup = createPlugin<FilesystemContext, FilesystemSource, FilesystemOutput>(
   (context) => ({
     name: "filesystem",
     source: async (source) => {
+      // const filenames = await getUniqueFilenames(
+      //   source.paths.map((path) =>
+      //     getFilenames(Path.resolve(context.root, path), source.ignorePaths)
+      //   )
+      // );
       const filenames = await getUniqueFilenames(
-        source.paths.map((path) =>
-          getFilenames(Path.resolve(context.root, path), source.ignorePaths)
-        )
+        source.paths.map((path) => {
+          console.log({
+            "context.root": context.root,
+            path,
+            // resolvedPath,
+            "source.ignorePaths": source.ignorePaths,
+          })
+          const resolvedPath = Path.resolve(context.root, path)
+          return getFilenames(resolvedPath, source.ignorePaths)
+        })
       );
       const documents: Document[] = filenames.map((filename) => {
         const blob = readFileSync(Path.resolve(filename));

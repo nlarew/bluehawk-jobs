@@ -1,8 +1,8 @@
-import { ISource, IOutput, IPlugin } from "../../job";
+import { ISource, IOutput, IContext } from "../../job";
 import { Document } from "bluehawk";
 import { createPlugin } from "../../plugin";
 
-export interface GitHubPlugin extends IPlugin {
+export interface GitHubContext extends IContext {
   name: "github";
 }
 
@@ -31,7 +31,7 @@ export interface GitHubOutput extends GitHubRepo, IOutput {
   }
 }
 
-export const setup = createPlugin<GitHubSource, GitHubOutput>(context => ({
+export const setup = createPlugin<GitHubContext, GitHubSource, GitHubOutput>(context => ({
   name: "github",
   source: async (source) => {
     const documents: Document[] = []
